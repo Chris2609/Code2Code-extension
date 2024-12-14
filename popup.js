@@ -13,25 +13,41 @@ function addConvertButtonListener() {
                     }, async (results) => {
                         const selection = results[0].result;
                         if (selection) {
+                            convertBtn.disabled = true;
                             const selectedText = selection;
+                            const requestBody = {
+                                prompt: selectedText,
+                                languageTo: select2.value
+                            };
+
+                            if (select1.value !== 'Automatic') {
+                                requestBody.languageFrom = select1.value;
+                            }
+
                             const apiResponse = await fetch("https://syntha.ai/api/ai-public/converter", {
                                 headers: {
                                     "accept": "*/*",
                                 },
-                                referrer: "https://syntha.ai/converters/java-to-kotlin",
-                                referrerPolicy: "strict-origin-when-cross-origin",
-                                body: JSON.stringify({
-                                    prompt: selectedText,
-                                    languageFrom: select1.value,
-                                    languageTo: select2.value
-                                }),
+                                body: JSON.stringify(requestBody),
                                 method: "POST",
                                 mode: "cors",
                                 credentials: "include"
                             });
-                            
                             var text = await apiResponse.text();
-                            console.log(estructurarCodigo(text));
+                            var structuredCode = estructurarCodigo(text);
+                            chrome.scripting.executeScript({
+                                target: { tabId: tabs[0].id },
+                                func: (structuredCode) => {
+                                    const selection = window.getSelection();
+                                    if (selection.rangeCount > 0) {
+                                        const range = selection.getRangeAt(0);
+                                        range.deleteContents();
+                                        range.insertNode(document.createTextNode(structuredCode));
+                                    }
+                                },
+                                args: [structuredCode]
+                            });
+                            convertBtn.disabled = false;
                         }
                     });
                 });
@@ -51,23 +67,17 @@ const intervalId = setInterval(() => {
 }, 100);
 
 function estructurarCodigo(entrada) {
-    // Filtrar las líneas que comienzan con "0:"
     const lineasCodigo = entrada.split('\n').filter(linea => linea.startsWith('0:'));
     
-    // Extraer el contenido después de "0:" y unirlo, preservando los caracteres de escape
     const codigoUnido = lineasCodigo
       .map(linea => {
-        // Eliminar el "0:" inicial y las comillas externas
         let contenido = linea.substring(3).replace(/^"|"$/g, '');
-        // Reemplazar "\\n" por un salto de línea real
         contenido = contenido.replace(/\\n/g, '\n');
-        // Reemplazar comillas escapadas por comillas simples
         contenido = contenido.replace(/\\"/g, '"');
         return contenido;
       })
       .join('');
-    
-    // Devolver el código estructurado
+
     return codigoUnido;
   }
   
