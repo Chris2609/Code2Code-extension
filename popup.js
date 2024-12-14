@@ -2,6 +2,8 @@
 function addConvertButtonListener() {
     const convertBtn = document.getElementById('convertBtn');
     if (convertBtn) {
+        const select1 = document.getElementById('from');
+        const select2 = document.getElementById('to');
         convertBtn.addEventListener('click', async () => {
             try {
                 chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -15,30 +17,21 @@ function addConvertButtonListener() {
                             const apiResponse = await fetch("https://syntha.ai/api/ai-public/converter", {
                                 headers: {
                                     "accept": "*/*",
-                                    "content-type": "application/json",
-                                    "sec-ch-ua": "\"Google Chrome\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\"",
-                                    "sec-ch-ua-mobile": "?0",
-                                    "sec-ch-ua-platform": "\"Windows\""
                                 },
                                 referrer: "https://syntha.ai/converters/java-to-kotlin",
                                 referrerPolicy: "strict-origin-when-cross-origin",
                                 body: JSON.stringify({
                                     prompt: selectedText,
-                                    languageFrom: "Java",
-                                    languageTo: "Kotlin"
+                                    languageFrom: select1.value,
+                                    languageTo: select2.value
                                 }),
                                 method: "POST",
                                 mode: "cors",
                                 credentials: "include"
                             });
                             
-                            const text = await apiResponse.text();
-                            try {
-                                const data = JSON.parse(text);
-                                console.log(data);
-                            } catch (error) {
-                                console.log(text);
-                            }
+                            var text = await apiResponse.text();
+                            console.log(estructurarCodigo(text));
                         }
                     });
                 });
@@ -56,3 +49,27 @@ const intervalId = setInterval(() => {
         clearInterval(intervalId);
     }
 }, 100);
+
+function estructurarCodigo(entrada) {
+    // Filtrar las líneas que comienzan con "0:"
+    const lineasCodigo = entrada.split('\n').filter(linea => linea.startsWith('0:'));
+    
+    // Extraer el contenido después de "0:" y unirlo, preservando los caracteres de escape
+    const codigoUnido = lineasCodigo
+      .map(linea => {
+        // Eliminar el "0:" inicial y las comillas externas
+        let contenido = linea.substring(3).replace(/^"|"$/g, '');
+        // Reemplazar "\\n" por un salto de línea real
+        contenido = contenido.replace(/\\n/g, '\n');
+        // Reemplazar comillas escapadas por comillas simples
+        contenido = contenido.replace(/\\"/g, '"');
+        return contenido;
+      })
+      .join('');
+    
+    // Devolver el código estructurado
+    return codigoUnido;
+  }
+  
+  
+  
