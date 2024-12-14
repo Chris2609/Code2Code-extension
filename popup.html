@@ -1,25 +1,167 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <style>
-    body { width: 200px; padding: 10px; }
-    button { width: 100%; padding: 8px; }
+  <head>
+    <style>
+      body {
+        width: 200px;
+        padding: 10px;
+      }
+      button {
+        width: 100%;
+        padding: 8px;
+      }
     </style>
   </head>
   <body>
     <p>Convert</p>
     <select id="from">
-    <option value="Automatic" selected>Automatico</option>
-    <option value="Java">Java</option>
-    <option value="Kotlin">Kotlin</option>
-    <option value="Python">Python</option>
+      <option value="Automatic" selected>Automatic</option>
+      <optgroup label="Programming languages">
+        <option value="Assembly">Assembly</option>
+        <option value="C">C</option>
+        <option value="C#">C#</option>
+        <option value="C++">C++</option>
+        <option value="Clojure">Clojure</option>
+        <option value="Dart">Dart</option>
+        <option value="Delphi">Delphi</option>
+        <option value="Elixir">Elixir</option>
+        <option value="F#">F#</option>
+        <option value="Go">Go</option>
+        <option value="Groovy">Groovy</option>
+        <option value="Haskell">Haskell</option>
+        <option value="Java">Java</option>
+        <option value="JavaScript">JavaScript</option>
+        <option value="Julia">Julia</option>
+        <option value="Kotlin">Kotlin</option>
+        <option value="Lua">Lua</option>
+        <option value="MATLAB">MATLAB</option>
+        <option value="Perl">Perl</option>
+        <option value="PHP">PHP</option>
+        <option value="Python">Python</option>
+        <option value="R">R</option>
+        <option value="Ruby">Ruby</option>
+        <option value="Rust">Rust</option>
+        <option value="Scala">Scala</option>
+        <option value="Swift">Swift</option>
+        <option value="TypeScript">TypeScript</option>
+      </optgroup>
+      <optgroup label="Databases">
+        <option value="Cassandra CQL">Cassandra CQL</option>
+        <option value="Elasticsearch">Elasticsearch</option>
+        <option value="MongoDB">MongoDB</option>
+        <option value="MySQL">MySQL</option>
+        <option value="Neo4j Cypher">Neo4j Cypher</option>
+        <option value="Oracle PL/SQL">Oracle PL/SQL</option>
+        <option value="PostgreSQL">PostgreSQL</option>
+        <option value="Redis">Redis</option>
+        <option value="SQL">SQL</option>
+      </optgroup>
+      <optgroup label="CSS Frameworks">
+        <option value="Bootstrap">Bootstrap</option>
+        <option value="Bulma">Bulma</option>
+        <option value="CSS">CSS</option>
+        <option value="MaterializeCSS">MaterializeCSS</option>
+        <option value="SemanticUI">SemanticUI</option>
+        <option value="TailwindCSS">TailwindCSS</option>
+      </optgroup>
+      <optgroup label="Web Frameworks">
+        <option value="Angular">Angular</option>
+        <option value="ASP.NET Core">ASP.NET Core</option>
+        <option value="Django">Django</option>
+        <option value="Express.js">Express.js</option>
+        <option value="FastAPI">FastAPI</option>
+        <option value="Flask">Flask</option>
+        <option value="Gin">Gin</option>
+        <option value="Laravel">Laravel</option>
+        <option value="NestJS">NestJS</option>
+        <option value="React">React</option>
+        <option value="Ruby on Rails">Ruby on Rails</option>
+        <option value="Spring Boot">Spring Boot</option>
+        <option value="Svelte">Svelte</option>
+        <option value="Vue.js">Vue.js</option>
+      </optgroup>
+      <optgroup label="AI Frameworks">
+        <option value="Keras">Keras</option>
+        <option value="PyTorch">PyTorch</option>
+        <option value="Scikit-learn">Scikit-learn</option>
+        <option value="TensorFlow">TensorFlow</option>
+        <option value="Theano">Theano</option>
+      </optgroup>
     </select>
-  <select id="to">
-    <option value="Java">Java</option>
-    <option value="Kotlin">Kotlin</option>
-    <option value="Python">Python</option>
-  </select>
-  <button id="convertBtn">Convert</button>
-  <script src="popup.js"></script>
-</body>
+    <select id="to">
+      <optgroup label="Programming languages">
+        <option value="Assembly">Assembly</option>
+        <option value="C">C</option>
+        <option value="C#">C#</option>
+        <option value="C++">C++</option>
+        <option value="Clojure">Clojure</option>
+        <option value="Dart">Dart</option>
+        <option value="Delphi">Delphi</option>
+        <option value="Elixir">Elixir</option>
+        <option value="F#">F#</option>
+        <option value="Go">Go</option>
+        <option value="Groovy">Groovy</option>
+        <option value="Haskell">Haskell</option>
+        <option value="Java">Java</option>
+        <option value="JavaScript">JavaScript</option>
+        <option value="Julia">Julia</option>
+        <option value="Kotlin">Kotlin</option>
+        <option value="Lua">Lua</option>
+        <option value="MATLAB">MATLAB</option>
+        <option value="Perl">Perl</option>
+        <option value="PHP">PHP</option>
+        <option value="Python">Python</option>
+        <option value="R">R</option>
+        <option value="Ruby">Ruby</option>
+        <option value="Rust">Rust</option>
+        <option value="Scala">Scala</option>
+        <option value="Swift">Swift</option>
+        <option value="TypeScript">TypeScript</option>
+      </optgroup>
+      <optgroup label="Databases">
+        <option value="SQL">SQL</option>
+        <option value="MySQL">MySQL</option>
+        <option value="PostgreSQL">PostgreSQL</option>
+        <option value="Oracle PL/SQL">Oracle PL/SQL</option>
+        <option value="MongoDB">MongoDB</option>
+        <option value="Cassandra CQL">Cassandra CQL</option>
+        <option value="Redis">Redis</option>
+        <option value="Neo4j Cypher">Neo4j Cypher</option>
+        <option value="Elasticsearch">Elasticsearch</option>
+      </optgroup>
+      <optgroup label="CSS Frameworks">
+        <option value="CSS">CSS</option>
+        <option value="Bootstrap">Bootstrap</option>
+        <option value="TailwindCSS">TailwindCSS</option>
+        <option value="MaterializeCSS">MaterializeCSS</option>
+        <option value="Bulma">Bulma</option>
+        <option value="SemanticUI">SemanticUI</option>
+      </optgroup>
+      <optgroup label="Web Frameworks">
+        <option value="React">React</option>
+        <option value="Angular">Angular</option>
+        <option value="Vue.js">Vue.js</option>
+        <option value="Svelte">Svelte</option>
+        <option value="Express.js">Express.js</option>
+        <option value="Django">Django</option>
+        <option value="Ruby on Rails">Ruby on Rails</option>
+        <option value="Laravel">Laravel</option>
+        <option value="Flask">Flask</option>
+        <option value="ASP.NET Core">ASP.NET Core</option>
+        <option value="Spring Boot">Spring Boot</option>
+        <option value="FastAPI">FastAPI</option>
+        <option value="NestJS">NestJS</option>
+        <option value="Gin">Gin</option>
+      </optgroup>
+      <optgroup label="AI Frameworks">
+        <option value="PyTorch">PyTorch</option>
+        <option value="TensorFlow">TensorFlow</option>
+        <option value="Keras">Keras</option>
+        <option value="Scikit-learn">Scikit-learn</option>
+        <option value="Theano">Theano</option>
+      </optgroup>
+    </select>
+    <button id="convertBtn">Convert</button>
+    <script src="popup.js"></script>
+  </body>
 </html>
