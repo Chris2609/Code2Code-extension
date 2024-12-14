@@ -16,5 +16,12 @@
     },
     "host_permissions": [
       "https://syntha.ai/*"
+    ],
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "css": ["prism.css"],
+        "js": ["prism.js"]
+      }
     ]
   }

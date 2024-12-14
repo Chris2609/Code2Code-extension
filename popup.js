@@ -35,17 +35,31 @@ function addConvertButtonListener() {
                             });
                             var text = await apiResponse.text();
                             var structuredCode = estructurarCodigo(text);
+                            
+                            // Aplicar resaltado de sintaxis con Prism
+                            var language = select2.value.toLowerCase();
+                            var highlightedCode = Prism.highlight(structuredCode, Prism.languages[language], language);
+                            
                             chrome.scripting.executeScript({
                                 target: { tabId: tabs[0].id },
-                                func: (structuredCode) => {
+                                func: (highlightedCode, language) => {
                                     const selection = window.getSelection();
                                     if (selection.rangeCount > 0) {
                                         const range = selection.getRangeAt(0);
                                         range.deleteContents();
-                                        range.insertNode(document.createTextNode(structuredCode));
+                                        
+                                        // Crear elementos pre y code
+                                        const preElement = document.createElement('pre');
+                                        const codeElement = document.createElement('code');
+                                        codeElement.className = `language-${language}`;
+                                        codeElement.innerHTML = highlightedCode;
+                                        
+                                        // Insertar el código resaltado
+                                        preElement.appendChild(codeElement);
+                                        range.insertNode(preElement);
                                     }
                                 },
-                                args: [structuredCode]
+                                args: [highlightedCode, language]
                             });
                             convertBtn.disabled = false;
                         }
@@ -79,7 +93,4 @@ function estructurarCodigo(entrada) {
       .join('');
 
     return codigoUnido;
-  }
-  
-  
-  
+}
