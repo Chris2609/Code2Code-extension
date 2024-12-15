@@ -98,6 +98,8 @@ function estructurarCodigo(entrada) {
         // Replace remaining \n with actual newlines
         contenido = contenido.replace(/\\n/g, '\n');
         
+        // Replace escaped backslashes with single backslash
+        contenido = contenido.replace(/\\\\/g, '\\');
         contenido = contenido.replace(/\\"/g, '"');
         return contenido;
       })
