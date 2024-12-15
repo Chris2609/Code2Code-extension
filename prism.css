@@ -4,9 +4,9 @@
 .highlight-number { color: #FF8C00; }
 .highlight-boolean { color: #0000FF; }
 .highlight-null { color: #0000FF; }
-.highlight-function { color: #800080; }
+.highlight-function { color: #d67ad6; }
 .highlight-class { color: #2B91AF; }
-.highlight-decorator { color: #800080; }
+.highlight-decorator { color: #9461b3; }
 .highlight-variable { color: #FF0000; }
 .highlight-symbol { color: #FF0000; }
 .highlight-lifetime { color: #B22222; }

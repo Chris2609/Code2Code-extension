@@ -89,7 +89,15 @@ function estructurarCodigo(entrada) {
     const codigoUnido = lineasCodigo
       .map(linea => {
         let contenido = linea.substring(3).replace(/^"|"$/g, '');
+        
+        // Find content within quotes and protect \n
+        contenido = contenido.replace(/(['"`´])(.*?)\1/g, (match) => {
+            return match.replace(/\\n/g, '\n');
+        });
+        
+        // Replace remaining \n with actual newlines
         contenido = contenido.replace(/\\n/g, '\n');
+        
         contenido = contenido.replace(/\\"/g, '"');
         return contenido;
       })
@@ -101,6 +109,74 @@ function estructurarCodigo(entrada) {
 function highlightSyntax(code, language) {
     code = code.replace(/</g, '&lt;').replace(/>/g, '&gt;')
              .replace(/'/g, '&apos;').replace(/"/g, '&quot;');
+
+
+                 // Normalize language name to match our pattern keys
+    const languageMap = {
+        'Assembly': 'assembly',
+        'C': 'c',
+        'C#': 'csharp',
+        'C++': 'cpp',
+        'Clojure': 'clojure',
+        'Dart': 'dart',
+        'Delphi': 'delphi',
+        'Elixir': 'elixir',
+        'F#': 'fsharp',
+        'Go': 'go',
+        'Groovy': 'groovy',
+        'Haskell': 'haskell',
+        'Java': 'java',
+        'JavaScript': 'javascript',
+        'Julia': 'julia',
+        'Kotlin': 'kotlin',
+        'Lua': 'lua',
+        'MATLAB': 'matlab',
+        'Perl': 'perl',
+        'PHP': 'php',
+        'Python': 'python',
+        'R': 'r',
+        'Ruby': 'ruby',
+        'Rust': 'rust',
+        'Scala': 'scala',
+        'Swift': 'swift',
+        'TypeScript': 'typescript',
+        'SQL': 'sql',
+        'MySQL': 'mysql',
+        'PostgreSQL': 'postgresql',
+        'Oracle PL/SQL': 'oracle',
+        'MongoDB': 'mongodb',
+        'Cassandra CQL': 'cassandra',
+        'Redis': 'redis',
+        'Neo4j Cypher': 'neo4j',
+        'Elasticsearch': 'elasticsearch',
+        'CSS': 'css',
+        'Bootstrap': 'bootstrap',
+        'TailwindCSS': 'tailwindcss',
+        'MaterializeCSS': 'materializecss',
+        'Bulma': 'bulma',
+        'SemanticUI': 'semanticui',
+        'React': 'react',
+        'Angular': 'angular',
+        'Vue.js': 'vue',
+        'Svelte': 'svelte',
+        'Express.js': 'express',
+        'Django': 'django',
+        'Ruby on Rails': 'rubyonrails',
+        'Laravel': 'laravel',
+        'Flask': 'flask',
+        'ASP.NET Core': 'aspnetcore',
+        'Spring Boot': 'springboot',
+        'FastAPI': 'fastapi',
+        'NestJS': 'nestjs',
+        'Gin': 'gin',
+        'PyTorch': 'pytorch',
+        'TensorFlow': 'tensorflow',
+        'Keras': 'keras',
+        'Scikit-learn': 'scikitlearn',
+        'Theano': 'theano'
+    };
+
+    const normalizedLanguage = languageMap[language] || 'javascript'; // fallback to javascript if not found
 
     const commonPatterns = {
         keyword: /\b(if|else|for|while|function|return|var|let|const|class|import|export|from|try|catch|throw|new|this|super|extends|implements|interface|public|private|protected|static|final|abstract|async|await)\b/g,
@@ -312,7 +388,7 @@ function highlightSyntax(code, language) {
     };
 
     // Combinar patrones comunes con los específicos del lenguaje
-    const combinedPatterns = { ...commonPatterns, ...(languagePatterns[language] || {}) };
+    const combinedPatterns = { ...commonPatterns, ...(languagePatterns[normalizedLanguage] || {}) };
 
     // Aplicar colores sin añadir comillas extras
     let coloredCode = code;
@@ -322,4 +398,3 @@ function highlightSyntax(code, language) {
 
     return coloredCode;
 }
-
