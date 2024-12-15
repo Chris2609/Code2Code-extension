@@ -20,11 +20,7 @@ function addConvertButtonListener() {
                                 languageTo: select2.value,
                                 languageFrom: select1.value !== 'Automatic' ? select1.value : undefined
                             };
-
-                            if (select1.value !== 'Automatic') {
-                                requestBody.languageFrom = select1.value;
-                            }
-
+                    
                             const apiResponse = await fetch("https://syntha.ai/api/ai-public/converter", {
                                 headers: {
                                     "accept": "*/*",
@@ -34,23 +30,40 @@ function addConvertButtonListener() {
                                 mode: "cors",
                                 credentials: "include"
                             });
-                            var text = await apiResponse.text();
-                            var structuredCode = estructurarCodigo(text);
-                            var highlightedCode = highlightSyntax(structuredCode, select2.value);
-                            chrome.scripting.executeScript({
-                                target: { tabId: tabs[0].id },
-                                func: (highlightedCode) => {
-                                    const selection = window.getSelection();
-                                    if (selection.rangeCount > 0) {
-                                        const range = selection.getRangeAt(0);
-                                        range.deleteContents();
-                                        const tempDiv = document.createElement('div');
-                                        tempDiv.innerHTML = highlightedCode;
-                                        range.insertNode(tempDiv);
-                                    }
-                                },
-                                args: [highlightedCode]
-                            });
+                    
+                            // Usamos getReader() para leer el cuerpo de la respuesta de manera incremental
+                            const reader = apiResponse.body.getReader();
+                            const decoder = new TextDecoder();
+                            let done = false;
+                            let partialText = ""; // Para almacenar el texto recibido parcialmente
+                    
+                            // Función para procesar los fragmentos conforme llegan
+                            while (!done) {
+                                const { value, done: readerDone } = await reader.read();
+                                done = readerDone;
+                                const chunk = decoder.decode(value, { stream: true });
+                                partialText += chunk;
+                    
+                                // Puedes realizar alguna actualización visual aquí con el texto parcial
+                                const structuredCode = estructurarCodigo(partialText); // Procesa el texto parcialmente recibido
+                                const highlightedCode = highlightSyntax(structuredCode, select2.value);
+                    
+                                chrome.scripting.executeScript({
+                                    target: { tabId: tabs[0].id },
+                                    func: (highlightedCode) => {
+                                        const selection = window.getSelection();
+                                        if (selection.rangeCount > 0) {
+                                            const range = selection.getRangeAt(0);
+                                            range.deleteContents();
+                                            const tempDiv = document.createElement('div');
+                                            tempDiv.innerHTML = highlightedCode;
+                                            range.insertNode(tempDiv);
+                                        }
+                                    },
+                                    args: [highlightedCode]
+                                });
+                            }
+                    
                             convertBtn.disabled = false;
                         }
                     });
