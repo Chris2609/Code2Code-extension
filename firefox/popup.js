@@ -6,72 +6,67 @@ function addConvertButtonListener() {
         const select2 = document.getElementById('to');
         convertBtn.addEventListener('click', async () => {
             try {
-                chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-                    chrome.scripting.executeScript({
-                        target: { tabId: tabs[0].id },
-                        func: () => window.getSelection().toString()
-                    }, async (results) => {
-                        const selection = results[0].result;
-                        if (selection) {
-                            convertBtn.disabled = true;
-                            convertBtn.style.filter = 'grayscale(100%)';
-                            convertBtn.innerText = "Converting...";
-                            const selectedText = selection;
-                            const requestBody = {
-                                prompt: selectedText,
-                                languageTo: select2.value,
-                                languageFrom: select1.value !== 'Automatic' ? select1.value : undefined
-                            };
-                    
-                            const apiResponse = await fetch("https://syntha.ai/api/ai-public/converter", {
-                                headers: {
-                                    "accept": "*/*",
-                                },
-                                body: JSON.stringify(requestBody),
-                                method: "POST",
-                                mode: "cors",
-                                credentials: "include"
-                            });
-                    
-                            // Usamos getReader() para leer el cuerpo de la respuesta de manera incremental
-                            const reader = apiResponse.body.getReader();
-                            const decoder = new TextDecoder();
-                            let done = false;
-                            let partialText = ""; // Para almacenar el texto recibido parcialmente
-                    
-                            // Función para procesar los fragmentos conforme llegan
-                            while (!done) {
-                                const { value, done: readerDone } = await reader.read();
-                                done = readerDone;
-                                const chunk = decoder.decode(value, { stream: true });
-                                partialText += chunk;
-                    
-                                // Puedes realizar alguna actualización visual aquí con el texto parcial
-                                const structuredCode = estructurarCodigo(partialText); // Procesa el texto parcialmente recibido
-                                const highlightedCode = highlightSyntax(structuredCode, select2.value);
-                    
-                                chrome.scripting.executeScript({
-                                    target: { tabId: tabs[0].id },
-                                    func: (highlightedCode) => {
-                                        const selection = window.getSelection();
-                                        if (selection.rangeCount > 0) {
-                                            const range = selection.getRangeAt(0);
-                                            range.deleteContents();
-                                            const tempDiv = document.createElement('div');
-                                            tempDiv.innerHTML = highlightedCode;
-                                            range.insertNode(tempDiv);
-                                        }
-                                    },
-                                    args: [highlightedCode]
-                                });
-                            }
-                    
-                            convertBtn.disabled = false;
-                            convertBtn.style.filter = 'none';
-                            convertBtn.innerText = "Convert";
-                        }
-                    });
+                const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+                const selection = await browser.tabs.executeScript(tabs[0].id, {
+                    code: 'window.getSelection().toString()'
                 });
+
+                if (selection[0]) {
+                    convertBtn.disabled = true;
+                    convertBtn.style.filter = 'grayscale(100%)';
+                    convertBtn.innerText = "Converting...";
+                    
+                    const selectedText = selection[0];
+                    const requestBody = {
+                        prompt: selectedText,
+                        languageTo: select2.value,
+                        languageFrom: select1.value !== 'Automatic' ? select1.value : undefined
+                    };
+            
+                    const apiResponse = await fetch("https://syntha.ai/api/ai-public/converter", {
+                        headers: {
+                            "accept": "*/*",
+                        },
+                        body: JSON.stringify(requestBody),
+                        method: "POST",
+                        mode: "cors",
+                        credentials: "include"
+                    });
+            
+                    const reader = apiResponse.body.getReader();
+                    const decoder = new TextDecoder();
+                    let done = false;
+                    let partialText = "";
+            
+                    while (!done) {
+                        const { value, done: readerDone } = await reader.read();
+                        done = readerDone;
+                        const chunk = decoder.decode(value, { stream: true });
+                        partialText += chunk;
+            
+                        const structuredCode = estructurarCodigo(partialText);
+                        const highlightedCode = highlightSyntax(structuredCode, select2.value);
+            
+                        await browser.tabs.executeScript(tabs[0].id, {
+                            code: `
+                                (function() {
+                                    const selection = window.getSelection();
+                                    if (selection.rangeCount > 0) {
+                                        const range = selection.getRangeAt(0);
+                                        range.deleteContents();
+                                        const tempDiv = document.createElement('div');
+                                        tempDiv.innerHTML = ${JSON.stringify(highlightedCode)};
+                                        range.insertNode(tempDiv);
+                                    }
+                                })();
+                            `
+                        });
+                    }
+            
+                    convertBtn.disabled = false;
+                    convertBtn.style.filter = 'none';
+                    convertBtn.innerText = "Convert";
+                }
             } catch (error) {
                 console.error('Error:', error);
             }
@@ -86,6 +81,7 @@ const intervalId = setInterval(() => {
         clearInterval(intervalId);
     }
 }, 100);
+
 
 function estructurarCodigo(entrada) {
     // First, get all lines starting with '0:' and join them
