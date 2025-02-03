@@ -3,17 +3,55 @@
   <head>
     <style>
       body {
-        width: 200px;
+        width: 300px;
         padding: 10px;
+        background-color: rgb(41, 41, 41);
       }
       button {
         width: 100%;
         padding: 8px;
       }
+      #titulo {
+        position: relative;
+        color: whitesmoke;
+        top: -5px;
+        font-family: monospace;
+      }
+
+      select{
+        width: 49%;
+        padding: 5px;
+        background-color: rgb(41, 41, 41);
+        color: whitesmoke;
+      }
+    
+      #convertBtn{
+      background: linear-gradient(90deg,#5bdeff,#6f00ff,#ff8fab);
+      background-size: 180% 180%;
+      animation: gradient-animation 4s ease-in-out infinite alternate;
+      color: whitesmoke;
+      font-family: monospace;
+      cursor: pointer;
+      border: none;
+      margin-top: 10px;
+    }
+
+    @keyframes gradient-animation {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
     </style>
   </head>
   <body>
-    <p>Convert</p>
+    <h1 id="titulo">Convert</h1>
+    <img src="images/iconoGod.png" width="65px" height="65px" alt="code2code.png" style="position: absolute; top: 3px; right: 5px;">
     <select id="from">
       <option value="Automatic" selected>Automatic</option>
       <optgroup label="Programming languages">

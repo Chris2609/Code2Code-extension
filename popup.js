@@ -84,28 +84,48 @@ const intervalId = setInterval(() => {
 }, 100);
 
 function estructurarCodigo(entrada) {
-    const lineasCodigo = entrada.split('\n').filter(linea => linea.startsWith('0:'));
+    // First, get all lines starting with '0:' and join them
+    let codigoCompleto = entrada.split('\n')
+        .filter(linea => linea.startsWith('0:'))
+        .map(linea => linea.substring(3).replace(/^"|"$/g, ''))
+        .join('');
     
-    const codigoUnido = lineasCodigo
-      .map(linea => {
-        let contenido = linea.substring(3).replace(/^"|"$/g, '');
-        
-        // Find content within quotes and protect \n
-        contenido = contenido.replace(/(['"`´])(.*?)\1/g, (match) => {
-            return match.replace(/\\n/g, '\n');
-        });
-        
-        // Replace remaining \n with actual newlines
-        contenido = contenido.replace(/\\n/g, '\n');
-        
-        // Replace escaped backslashes with single backslash
-        contenido = contenido.replace(/\\\\/g, '\\');
-        contenido = contenido.replace(/\\"/g, '"');
-        return contenido;
-      })
-      .join('');
+    // Replace escaped quotes and backslashes
+    codigoCompleto = codigoCompleto
+        .replace(/\\\\/g, '\\')
+        .replace(/\\"/g, '"');
 
-    return codigoUnido;
+    // Handle newlines within string literals separately
+    let resultado = '';
+    let enCadena = false;
+    let caracterCadena = '';
+    let buffer = '';
+
+    for (let i = 0; i < codigoCompleto.length; i++) {
+        const char = codigoCompleto[i];
+        
+        if ((char === '"' || char === "'" || char === '`') && codigoCompleto[i - 1] !== '\\') {
+            if (!enCadena) {
+                enCadena = true;
+                caracterCadena = char;
+            } else if (char === caracterCadena) {
+                enCadena = false;
+            }
+        }
+
+        if (char === '\\' && codigoCompleto[i + 1] === 'n') {
+            if (enCadena) {
+                buffer += '\\n'; // Mantener \n en cadenas
+            } else {
+                buffer += '\n'; // Convertir a salto de línea real
+            }
+            i++; // Skip next character
+        } else {
+            buffer += char;
+        }
+    }
+
+    return buffer;
 }
 
 function highlightSyntax(code, language) {

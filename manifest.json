@@ -1,27 +1,33 @@
 {
-    "manifest_version": 3,
-    "name": "Code Converter",
-    "version": "1.0",
-    "description": "Convert code between programming languages",
-    "permissions": [
-      "contextMenus",
-      "activeTab",
-      "scripting"
-    ],
-    "background": {
-      "service_worker": "background.js"
-    },
-    "action": {
-      "default_popup": "popup.html"
-    },
-    "host_permissions": [
-      "https://syntha.ai/*"
-    ],
-    "content_scripts": [
-      {
-        "matches": ["<all_urls>"],
-        "css": ["prism.css"],
-        "js": ["prism.js"]
-      }
-    ]
-  }
+  "manifest_version": 3,
+  "name": "Code2Code",
+  "version": "1.0",
+  "description": "Convert code between programming languages",
+  "icons": {
+    "16": "images/icon16.png",
+    "32": "images/icon32.png",
+    "48": "images/icon64.png",
+    "128": "images/icon128.png"
+  },
+  "permissions": [
+    "contextMenus",
+    "activeTab",
+    "scripting"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "host_permissions": [
+    "https://syntha.ai/*"
+  ],
+  "content_scripts": [
+    {
+    "matches": ["<all_urls>"],
+    "css": ["prism.css"],
+    "js": ["prism.js"]
+    }
+  ]
+}
