@@ -1,0 +1,17 @@
+.highlight-keyword { color: #ff6262; }
+.highlight-string { color: #008000; }
+.highlight-comment { color: #808080; }
+.highlight-number { color: #FF8C00; }
+.highlight-boolean { color: #0000FF; }
+.highlight-null { color: #0000FF; }
+.highlight-function { color: #d67ad6; }
+.highlight-class { color: #2B91AF; }
+.highlight-decorator { color: #9461b3; }
+.highlight-variable { color: #FF0000; }
+.highlight-symbol { color: #FF0000; }
+.highlight-lifetime { color: #B22222; }
+.highlight-tag { color: #800000; }
+.highlight-attribute { color: #FF0000; }
+.highlight-selector { color: #800000; }
+.highlight-property { color: #0000FF; }
+.highlight-value { color: #008000; }
